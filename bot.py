@@ -1,8 +1,12 @@
 import os
 import yt_dlp
+import static_ffmpeg
 from shazamio import Shazam
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes
+
+# FFmpeg-ni avtomatik sozlash
+static_ffmpeg.add_paths()
 
 # =========================
 TOKEN = "8665295102:AAF4TALKq1tf9CGCGXIE7Mx3LZlrFLcitYU"
@@ -15,13 +19,14 @@ if not os.path.exists('downloads'):
 search_results = {}
 user_links = {}
 
-# YouTube blokirovkalarini chetlab o'tish uchun universal sozlamalar
+# YouTube blokirovkalarini chetlab o'tish uchun COOKIE bilan yangilangan sozlamalar
 YDL_COMMON_OPTS = {
     'quiet': True,
     'no_warnings': True,
     'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
     'referer': 'https://www.google.com/',
     'nocheckcertificate': True,
+    'cookiefile': 'cookies.txt',  # <--- QIDIRISH UCHUN KUKI FAYL
 }
 
 async def is_subscribed(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -60,6 +65,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         status_msg = await update.message.reply_text(f"🔍 '{text}' qidirilmoqda...")
         try:
+            # Qidiruv sozlamalari
             ydl_opts = {**YDL_COMMON_OPTS, 'extract_flat': True}
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(f"ytsearch10:{text}", download=False)
@@ -90,7 +96,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text(results_text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
 
         except Exception as e:
-            await status_msg.edit_text(f"❌ Xatolik yuz berdi. Iltimos qayta urinib ko'ring.")
+            await status_msg.edit_text(f"❌ Xatolik yuz berdi. Cookies muddati o'tgan bo'lishi mumkin.")
 
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -110,11 +116,13 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await query.answer(f"Yuklanmoqda: {selected['title']}")
             path = f"downloads/mus_{chat_id}_{idx}.mp3"
             try:
+                # Yuklab olish sozlamalari
                 ydl_opts = {
                     **YDL_COMMON_OPTS,
                     'format': 'bestaudio/best',
                     'outtmpl': path[:-4],
                     'postprocessors': [{'key': 'FFmpegExtractAudio', 'preferredcodec': 'mp3', 'preferredquality': '192'}],
+                    'cookiefile': 'cookies.txt' # <--- YUKLAB OLISH UCHUN KUKI FAYL
                 }
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                     ydl.download([selected['url']])
@@ -122,7 +130,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 await query.message.reply_audio(audio=open(path, 'rb'), caption=f"✅ {selected['title']}\n@tanishuvcatone")
                 if os.path.exists(path): os.remove(path)
             except Exception as e:
-                await query.message.reply_text("⚠️ YouTube cheklovi sababli yuklab bo'lmadi. Boshqa variantni koring.")
+                await query.message.reply_text("⚠️ YouTube cheklovi (Sign in xatosi). Yangi cookies.txt yuklang.")
         return
 
 app = ApplicationBuilder().token(TOKEN).build()
