@@ -1,0 +1,9 @@
+# Netscape HTTP Cookie File
+# https://curl.haxx.se/rfc/cookie_spec.html
+# This is a generated file! Do not edit.
+
+.wappalyzer.com	TRUE	/	FALSE	1806877270	_ga	GA1.1.1025627271.1761127787
+.www.wappalyzer.com	TRUE	/	TRUE	1803853274	__stripe_mid	b755ce5a-f705-4128-805f-235b70f88024f9ea5b
+.wappalyzer.com	TRUE	/	FALSE	1806877271	_ga_L2630VFL5S	GS2.1.s1772317270$o6$g0$t1772317270$j60$l0$h0
+.wappalyzer.com	TRUE	/	FALSE	1788085274	crisp-client%2Fsession%2Ff2002ef6-c76c-4d05-9eb3-f67d7cb1cb68	session_16eae6c2-b8f6-462a-9bac-2cb580837f8e
+.www.wappalyzer.com	TRUE	/	TRUE	1772319074	__stripe_sid	8b78bbf5-6ff5-42e2-9f56-487aaf3a0ea3f09c8c
