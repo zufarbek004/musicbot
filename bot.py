@@ -20,13 +20,20 @@ search_results = {}
 user_links = {}
 
 # YouTube blokirovkalarini chetlab o'tish uchun COOKIE bilan yangilangan sozlamalar
-YDL_COMMON_OPTS = {
+ydl_opts = {
+    'format': 'bestaudio/best',
+    'outtmpl': path[:-4],
+    'postprocessors': [{'key': 'FFmpegExtractAudio', 'preferredcodec': 'mp3', 'preferredquality': '192'}],
     'quiet': True,
-    'no_warnings': True,
-    'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-    'referer': 'https://www.google.com/',
+    'cookiefile': 'cookies.txt',  # Fayl nomi aynan shunday bo'lsin
+    'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
     'nocheckcertificate': True,
-    'cookiefile': 'cookies.txt',  # <--- QIDIRISH UCHUN KUKI FAYL
+    'extractor_args': {
+        'youtube': {
+            'player_client': ['android', 'web'],
+            'player_skip': ['webpage', 'configs'],
+        }
+    }
 }
 
 async def is_subscribed(update: Update, context: ContextTypes.DEFAULT_TYPE):
